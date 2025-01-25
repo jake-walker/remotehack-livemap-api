@@ -16,5 +16,11 @@
     "vitest": "2.1.8",
     "wrangler": "^3.105.1"
   },
-  "packageManager": "pnpm@8.12.1+sha1.aa961ffce9b6eaa56307d9b5ff7e984f25b7eb58"
+  "packageManager": "pnpm@8.12.1+sha1.aa961ffce9b6eaa56307d9b5ff7e984f25b7eb58",
+  "dependencies": {
+    "@hono/zod-validator": "^0.4.2",
+    "hono": "^4.6.18",
+    "nanoid": "^5.0.9",
+    "zod": "^3.24.1"
+  }
 }

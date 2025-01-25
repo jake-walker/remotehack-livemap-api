@@ -1,18 +1,46 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.json`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import { Hono } from 'hono';
+import { addLocation, getLocations, locationCreate } from './controller';
+import { zValidator } from '@hono/zod-validator';
+import { cors } from 'hono/cors';
 
-export default {
-	async fetch(request, env, ctx): Promise<Response> {
-		return new Response('Hello World!');
-	},
-} satisfies ExportedHandler<Env>;
+const app = new Hono<{ Bindings: Env }>();
+
+app.use('/*', cors());
+
+app.get('/api/locations', async (c) => {
+	const locations = await getLocations(c);
+	return c.json({ locations }, 200);
+});
+
+app.post('/api/locations', zValidator('json', locationCreate), async (c) => {
+	const data = c.req.valid('json');
+
+	await addLocation(c, data);
+
+	return c.json({ ok: true }, 200);
+});
+
+app.get('/locations.geojson', async (c) => {
+	const locations = await getLocations(c);
+	const features = locations.map((item) => ({
+		type: 'Feature',
+		properties: {
+			name: item.name,
+			locationName: item.locationName,
+		},
+		geometry: {
+			type: 'Point',
+			coordinates: [item.longitude, item.latitude],
+		},
+	}));
+
+	return c.json(
+		{
+			type: 'FeatureCollection',
+			features,
+		},
+		200
+	);
+});
+
+export default app;
