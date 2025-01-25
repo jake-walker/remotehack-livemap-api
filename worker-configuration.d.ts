@@ -2,4 +2,7 @@
 
 interface Env {
 	remotehack_livemap: KVNamespace;
+	discordToken: string?;
+	discordPublicKey: string?;
+	discordApplicationId: string?;
 }

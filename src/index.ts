@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { addLocation, getLocations, locationCreate } from './controller';
 import { zValidator } from '@hono/zod-validator';
 import { cors } from 'hono/cors';
+import { commandHandler, registerGlobalCommands } from './discord/main';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -41,6 +42,14 @@ app.get('/locations.geojson', async (c) => {
 		},
 		200
 	);
+});
+
+app.post('/api/discord', commandHandler);
+
+app.post('/api/discord/register', async (c) => {
+	await registerGlobalCommands(c);
+
+	return c.json({ ok: true }, 200);
 });
 
 export default app;
