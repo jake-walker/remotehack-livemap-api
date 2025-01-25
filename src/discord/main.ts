@@ -3,7 +3,9 @@ import { Buffer } from 'buffer';
 import { Context } from '../types';
 import { ADD_LOCATION_COMMAND } from './commands';
 import { addLocation, geocode } from '../controller';
+import { locationCreate } from '../schema';
 
+// register commands with the discord api
 export async function registerGlobalCommands(c: Context) {
 	if (!c.env.discordApplicationId || !c.env.discordToken) throw new Error("Discord variables aren't set");
 
@@ -23,6 +25,7 @@ export async function registerGlobalCommands(c: Context) {
 	}
 }
 
+// handle the location command
 async function addLocationCommand(c: Context, user: string, location: string | undefined, anonymous: boolean): Promise<string> {
 	if (!location) {
 		return 'Please specify a location!';
@@ -35,11 +38,14 @@ async function addLocationCommand(c: Context, user: string, location: string | u
 	} else if (geocodeResult.length > 1) {
 		return `I found a few results, try again with a more specific location:\n- ${geocodeResult.map((x) => x.name).join('\n- ')}`;
 	} else {
-		await addLocation(c, {
-			name: anonymous ? undefined : user,
-			latitude: geocodeResult[0].latitude,
-			longitude: geocodeResult[0].longitude,
-		});
+		await addLocation(
+			c,
+			locationCreate.parse({
+				name: anonymous ? undefined : user,
+				latitude: geocodeResult[0].latitude,
+				longitude: geocodeResult[0].longitude,
+			})
+		);
 		return 'Your location has been added to the map!';
 	}
 }
@@ -73,6 +79,7 @@ export async function commandHandler(c: Context) {
 	// handle commands
 	const message = await c.req.json();
 
+	// handle ping message
 	if (message.type === 1) {
 		console.log('handling ping');
 		return c.json(message, 200, {
@@ -80,15 +87,19 @@ export async function commandHandler(c: Context) {
 		});
 	}
 
+	// handle command messages
 	if (message.type === 2) {
+		// get the sender's username
 		const user = message.member.user.global_name;
 
 		switch (message.data.name.toLowerCase()) {
 			case ADD_LOCATION_COMMAND.name.toLowerCase():
 				console.log('Handling add location command');
 
+				// get command parameters
 				const location = message.data.options.find((opt: any) => opt.name === 'location')?.value;
 				const anonymous = message.data.options.find((opt: any) => opt.name === 'anonymous')?.value || false;
+
 				const content = await addLocationCommand(c, user, location, anonymous);
 
 				return c.json(

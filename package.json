@@ -19,10 +19,13 @@
   "packageManager": "pnpm@8.12.1+sha1.aa961ffce9b6eaa56307d9b5ff7e984f25b7eb58",
   "dependencies": {
     "@hono/zod-validator": "^0.4.2",
+    "@scalar/hono-api-reference": "^0.5.168",
     "buffer": "^6.0.3",
     "hono": "^4.6.18",
+    "hono-openapi": "^0.4.3",
     "nanoid": "^5.0.9",
     "tweetnacl": "^1.0.3",
-    "zod": "^3.24.1"
+    "zod": "^3.24.1",
+    "zod-openapi": "^4.2.3"
   }
 }

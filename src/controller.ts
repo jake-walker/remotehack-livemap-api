@@ -1,44 +1,20 @@
-import { z } from 'zod';
 import { Context } from './types';
 import { nanoid } from 'nanoid';
+import { LocationAndMetadata, LocationCreate, LocationsResponse } from './schema';
 
-const LOCATION_PRECISION = 100;
-
-export const locationCreate = z.object({
-	name: z.string().min(1).optional(),
-	latitude: z
-		.number()
-		.min(-90)
-		.max(90)
-		.transform((v) => Math.round(v * LOCATION_PRECISION) / LOCATION_PRECISION),
-	longitude: z
-		.number()
-		.min(-180)
-		.max(180)
-		.transform((v) => Math.round(v * LOCATION_PRECISION) / LOCATION_PRECISION),
-});
-
-export type LocationCreate = z.infer<typeof locationCreate>;
-
-export type LocationMeta = {
-	createdAt: Date;
-	locationName?: String;
-};
-
-export async function addLocation(c: Context, item: LocationCreate): Promise<void> {
-	const metadata: LocationMeta = {
+export async function addLocation(c: Context, data: LocationCreate): Promise<void> {
+	const item: LocationAndMetadata = {
+		...data,
 		createdAt: new Date(),
-		locationName: await reverseGeocode(item.latitude, item.longitude),
+		locationName: await reverseGeocode(data.latitude, data.longitude),
 	};
 
-	console.log(metadata);
-
-	await c.env.remotehack_livemap.put(nanoid(), JSON.stringify({ ...item, ...metadata }), {
+	await c.env.remotehack_livemap.put(nanoid(), JSON.stringify(item), {
 		expirationTtl: 60 * 60 * 24 * 30, // expire in 1 month
 	});
 }
 
-export async function getLocations(c: Context): Promise<(LocationCreate & LocationMeta & { expiresAt?: Date })[]> {
+export async function getLocations(c: Context): Promise<LocationsResponse> {
 	const keys = await c.env.remotehack_livemap.list();
 
 	return (
@@ -51,7 +27,7 @@ export async function getLocations(c: Context): Promise<(LocationCreate & Locati
 				}
 
 				return {
-					...(JSON.parse(data) as LocationCreate & LocationMeta),
+					...(JSON.parse(data) as LocationAndMetadata),
 					expiresAt: k.expiration ? new Date(k.expiration * 1000) : undefined,
 				};
 			})
