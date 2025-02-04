@@ -24,8 +24,12 @@ app.get(
 			},
 			servers: [
 				{
+					url: 'https://remotehack-livemap-api.jakew.workers.dev',
+					description: 'Live API',
+				},
+				{
 					url: 'http://localhost:8787',
-					description: 'Local server',
+					description: 'Local API',
 				},
 			],
 		},

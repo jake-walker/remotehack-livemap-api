@@ -4,6 +4,31 @@ This is a simple API where people can share where they are working from during R
 
 This project uses Cloudflare Workers and Cloudflare KV for data persistence.
 
+## Usage
+
+> [!NOTE]
+> The backend will round coordinates to the nearest 2 decimal places so just general locations are shared.
+
+Add your location to the map in the RemoteHack Discord server by running:
+
+```
+/livemap location:London UK
+```
+
+Alternatively, there's also an API [documented here](https://remotehack-livemap-api.jakew.workers.dev/docs) where you can add your location too:
+
+```bash
+curl https://remotehack-livemap-api.jakew.workers.dev/api/locations \
+  --request POST \
+  --header 'Accept: */*' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "name": "Han Solo",
+  "latitude": 51.51,
+  "longitude": -0.17
+}'
+```
+
 ## Development
 
 ```bash
