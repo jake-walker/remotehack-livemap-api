@@ -10,22 +10,22 @@
 		"cf-typegen": "wrangler types"
 	},
 	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.6.4",
-		"@cloudflare/workers-types": "^4.20250124.3",
-		"typescript": "^5.5.2",
-		"vitest": "2.1.8",
-		"wrangler": "^3.105.1"
+		"@cloudflare/vitest-pool-workers": "^0.12.18",
+		"discord-api-types": "^0.38.40",
+		"typescript": "^5.9.3",
+		"vitest": "3.2.4",
+		"wrangler": "^4.69.0"
 	},
-	"packageManager": "pnpm@8.12.1+sha1.aa961ffce9b6eaa56307d9b5ff7e984f25b7eb58",
+	"packageManager": "pnpm@11.0.0-dev.1005+sha512.91f84a392eea348ea4852a182912d2520273a4336f933b78cc44bc931eb999923c097e9433a9b355adc1f725725ea99082fc9f032a559df832632e764c92c798",
 	"dependencies": {
-		"@hono/zod-validator": "^0.4.2",
-		"@scalar/hono-api-reference": "^0.5.168",
+		"@hono/zod-validator": "^0.4.3",
+		"@scalar/hono-api-reference": "^0.5.184",
 		"buffer": "^6.0.3",
-		"hono": "^4.6.18",
-		"hono-openapi": "^0.4.3",
-		"nanoid": "^5.0.9",
+		"hono": "^4.12.3",
+		"hono-openapi": "^0.4.8",
+		"nanoid": "^5.1.6",
 		"tweetnacl": "^1.0.3",
-		"zod": "^3.24.1",
-		"zod-openapi": "^4.2.3"
+		"zod": "^3.25.76",
+		"zod-openapi": "^4.2.4"
 	}
 }

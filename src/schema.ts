@@ -22,7 +22,7 @@ export const locationCreate = z
 
 export const locationAndMetadata = locationCreate
 	.extend({
-		createdAt: z.date().default(() => new Date()),
+		createdAt: z.coerce.date().default(() => new Date()),
 		locationName: z.string().optional().openapi({ example: 'London, United Kingdom' }),
 	})
 	.openapi({ ref: 'LocationAndMetadata' });
@@ -30,7 +30,8 @@ export const locationAndMetadata = locationCreate
 export const locationsResponse = z
 	.array(
 		locationAndMetadata.extend({
-			expiresAt: z.date().optional(),
+			id: z.string().openapi({ example: "GDsJ4GX1cHlU289mWvy5j" }),
+			expiresAt: z.coerce.date().optional().openapi({ example: new Date() }),
 		})
 	)
 	.openapi({ ref: 'LocationsResponse' });
@@ -42,6 +43,7 @@ export const locationsGeojsonResponse = z
 			z.object({
 				type: z.literal('Feature').openapi({ example: 'Feature' }),
 				properties: z.object({
+					id: z.string(),
 					name: z.string().optional().openapi({ example: 'Han Solo' }),
 					locationName: z.string().optional().openapi({ example: 'London, United Kingdom' }),
 				}),
@@ -56,12 +58,6 @@ export const locationsGeojsonResponse = z
 		),
 	})
 	.openapi({ ref: 'LocationsGeoJsonResponse' });
-
-export const okResponse = z
-	.object({
-		ok: z.boolean(),
-	})
-	.openapi({ ref: 'OkResponse' });
 
 export type LocationCreate = z.infer<typeof locationCreate>;
 export type LocationAndMetadata = z.infer<typeof locationAndMetadata>;

@@ -5,7 +5,7 @@ import { commandHandler, registerGlobalCommands } from './discord/main';
 import { describeRoute, openAPISpecs } from 'hono-openapi';
 import { resolver, validator as zValidator } from 'hono-openapi/zod';
 import { apiReference } from '@scalar/hono-api-reference';
-import { locationCreate, locationsGeojsonResponse, locationsResponse, okResponse } from './schema';
+import { locationCreate, locationsGeojsonResponse, locationsResponse } from './schema';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -59,8 +59,8 @@ app.get(
 		},
 	}),
 	async (c) => {
-		const locations = await getLocations(c);
-		return c.json({ locations }, 200);
+		const locations = await getLocations(c.env);
+		return c.json(locations, 200);
 	}
 );
 
@@ -72,7 +72,7 @@ app.post(
 			200: {
 				description: 'Successful response',
 				content: {
-					'application/json': { schema: resolver(okResponse) },
+					'application/json': { schema: resolver(locationsResponse.element) },
 				},
 			},
 		},
@@ -80,8 +80,8 @@ app.post(
 	zValidator('json', locationCreate),
 	async (c) => {
 		const data = c.req.valid('json');
-		await addLocation(c, data);
-		return c.json({ ok: true }, 200);
+		const output = await addLocation(c.env, data);
+		return c.json(output, 200);
 	}
 );
 
@@ -100,10 +100,11 @@ app.get(
 		},
 	}),
 	async (c) => {
-		const locations = await getLocations(c);
+		const locations = await getLocations(c.env);
 		const features = locations.map((item) => ({
 			type: 'Feature',
 			properties: {
+				id: item.id,
 				name: item.name,
 				locationName: item.locationName,
 			},
@@ -128,8 +129,8 @@ app.post('/api/discord', commandHandler);
 
 // discord registration command
 app.post('/api/discord/register', async (c) => {
-	await registerGlobalCommands(c);
+	await registerGlobalCommands(c.env);
 	return c.json({ ok: true }, 200);
 });
 
-export default app;
+export default app satisfies ExportedHandler<Env>;
